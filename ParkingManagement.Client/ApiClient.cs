@@ -11,17 +11,19 @@ namespace ParkingManagement.Client
         {
             Task<TResult?> GetFromJsonAsync<TResult>(string? requestUri);
             Task<HttpResponseMessage> PostAsJsonAsync<T>(string? requestUri, T value);
-        }
+            Uri BaseAddress { get; set; }
+    }
 
 
         public class ApiClient : IApiClient
     {
             private readonly HttpClient http;
+        public Uri BaseAddress { get; set; } = new Uri("https://localhost:5010/");
 
-            public ApiClient()
+        public ApiClient()
             {
                 this.http = new HttpClient();
-                this.http.BaseAddress = new Uri("https://localhost:5010/");
+                this.http.BaseAddress = BaseAddress;
             }
 
           

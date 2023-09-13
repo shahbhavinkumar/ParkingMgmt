@@ -1,7 +1,31 @@
 ﻿@using Shared
 @model StatsReport
 
-Todays Revenue: @Model.TodaysRevenue
+<table class="table table-condensed">
+    <thead class="thead-dark">
+        <tr>
+            <th>Todays Revenue</th>
+            <th>Spots Available</th>
+            <th>Average number of cars per day (for the past 30 days)</th>
+            <th>Average revenue per day (for the past 30 days)</th>
 
-Spots Available: @Model.SpotsAvailable
-
+        </tr>
+    </thead>
+       
+        <tr>
+            <td>
+               @Model.TodaysRevenue
+            </td>
+            <td>
+                @Model.SpotsAvailable
+            </td>
+            <td>
+                @Model.AverageCarsPerDay
+            </td>
+            <td>
+                @Model.AvgRevenueThirtyDays
+            </td>
+        </tr>
+        
+    <tr>
+</table>

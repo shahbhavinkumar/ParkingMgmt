@@ -41,7 +41,7 @@ namespace ParkingManagement.Client.Controllers
                 if (ParkVehicle(vehicle))
                 {
                     Spots.SpotsAvailable = Spots.SpotsAvailable - 1;
-                    List<ParkingInformation>? parkingInfoObject = GetParkingData().Result?.ToList();
+                    List<ParkingInformation>? parkingInfoObject = GetParkingData()?.ToList();
                     return PartialView(parkingInfoObject);
                 }
                 else
@@ -56,14 +56,14 @@ namespace ParkingManagement.Client.Controllers
                 if (Out(vehicle))
                 {
                     Spots.SpotsAvailable = Spots.SpotsAvailable + 1;
-                    List<ParkingInformation>? parkingInfoObject = GetParkingData().Result?.ToList();
+                    List<ParkingInformation>? parkingInfoObject = GetParkingData()?.ToList();
                     return PartialView(parkingInfoObject);
                 }
             }
 
             if (actionToPerform == "REFRESH") //used for page referesh
             {
-                List<ParkingInformation>? parkingInfoObject = GetParkingData().Result?.ToList();
+                List<ParkingInformation>? parkingInfoObject = GetParkingData()?.ToList();
 
                 if (parkingInfoObject != null)
                 {
@@ -88,9 +88,9 @@ namespace ParkingManagement.Client.Controllers
             return result.Content.ReadAsStringAsync().Result == "true" ? true : false ;
         }
 
-        private async Task<ParkingInformation[]?> GetParkingData()
+        private ParkingInformation[]? GetParkingData()
         {
-            return await _client.GetFromJsonAsync<ParkingInformation[]>("api/vehicle/getvehicledata");
+            return  _client.GetFromJsonAsync<ParkingInformation[]>("api/vehicle/getvehicledata").Result;
         }
 
        public IActionResult GetReport()

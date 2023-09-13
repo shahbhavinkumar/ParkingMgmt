@@ -8,7 +8,7 @@ namespace ParkingManagement.Api
     {
         bool IsCarRegisteredInParkingLot(ParkingInformation vehicle);
 
-        Task<IEnumerable<ParkingInformation>> GetParkingInformation();
+        IEnumerable<ParkingInformation> GetParkingInformation();
 
         bool ParkVehicle(ParkingInformation vehicle);
 
@@ -29,8 +29,6 @@ namespace ParkingManagement.Api
 
         public bool ParkVehicle(ParkingInformation vehicle)
         {
-            if (IsCarRegisteredInParkingLot(vehicle)) return false;
-
             try
             {
                 using (SqlConnection con = new SqlConnection(ConfigurationManager.AppSetting["ConnectionStrings:SqlConnection"]))
@@ -55,7 +53,7 @@ namespace ParkingManagement.Api
             return true;
         }
 
-        public async Task<IEnumerable<ParkingInformation>> GetParkingInformation()
+        public IEnumerable<ParkingInformation> GetParkingInformation()
         {
             var parkingInfoList = new List<ParkingInformation>();
 

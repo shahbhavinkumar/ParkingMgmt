@@ -1,18 +1,12 @@
 ﻿@using Shared;
-@{
-
-}
-
-
+@inject IApiClient _client;
 
 
 <style>
     .parent {
         display: grid;
-        grid-template-columns: repeat(5, 1fr);
-        grid-template-rows: repeat(5, 1fr);
-        grid-column-gap: 0px;
-        grid-row-gap: 0px;
+        grid-column-gap: 10px;
+        grid-row-gap: 10px;
     }
 
     .modal {
@@ -23,172 +17,184 @@
         transform: translate(-50%, -50%);
     }
 
-    .div1 {
+    .inputInfo {
         grid-area: 1 / 1 / 2 / 2;
     }
 
     .displayDetails {
         grid-area: 1 / 2 / 2 / 3;
     }
+
+    .errorDisplay {
+        grid-area: 2 / 1 / 3 / 3;
+    }
+
 </style>
 
 <div class="parent">
-    <div class="div1">
 
+    <!--This can be its own partial view in the future-->
+    <div class="inputInfo">
         Tag number:
-        <input id="tag_number" type="text" /><br/>
+        <input id="tag_number" type="text" /><br />
         <button id="button_in" value="val_1" name="but1">In</button>
-        <button id="button_out" value="val_1" name="but1">Out</button><br/>
+        <button id="button_out" value="val_1" name="but1">Out</button><br />
         <input id="button_stats" type="button" value="Stats" />
     </div>
 
-   <div class="displayDetails">
-    </div>
-    
+    <div class="displayDetails"></div>
+    <div class="errorDisplay"></div>
 
-    <div id="myModal" class="modal" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Customer Details Form</h5>
-                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                </div>
+
+</div>
+
+
+<div id="myModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Vehicle Report</h5>
+                <!--<button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>-->
+            </div>
+            <div class="modal-body">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
+</div>
 
 
 
 
+<script>
+
+    var currentTotalSpots = '@Int32.Parse(ConfigurationManager.AppSetting["Configs:totalSpot"])';
+    var baseadd = '@_client.BaseAddress';
 
 
-    <script>
+    $("#button_in").click(function (e) {
+        var tagNumber = $('#tag_number').val();
 
-        var currentTotalSpots = '@Int32.Parse(ConfigurationManager.AppSetting["Configs:totalSpot"])';
+        var vehicle = {
+            TagNumber: tagNumber,
+            InTime: new Date(),
+            OutTime: null,
+            Rate: "15"
+        };
 
-
-
-        $("#button_in").click(function (e) {
-            var tagNumber = $('#tag_number').val();
-
-            var vehicle = {
-                TagNumber: tagNumber,
-                InTime: new Date(),
-                OutTime : null,
-                Rate: "15"
-            };
-
-            if (tagNumber != '') {
-                $.ajax({
-                    url: "https://localhost:5010/api/vehicle/iscarregisteredinparking",
-                    type: 'POST',
-                    dataType: "json",
-                    contentType: "application/json",
-                    data: JSON.stringify(vehicle),
-                    success: function (data) {
-                        $('.displayDetails').html(data);
-                    },
-                    error: function (result) {
-                        //alert("Something went wrong");
-                        $('.displayDetails').html(result);
-                    }
-                });
-            }
-            else {
-                alert('Please enter a Tag number');
-            }
-        });
-
-        /*
-        $("#button_in").click(function (e) {
-            var tagNumber = $('#tag_number').val();
-
-            if (tagNumber != '') {
-                $.ajax({
-                    url: "/Home/ParkingInformation",
-                    data: {
-                        'tagNumber': tagNumber, 'actionToPerform': "IN"
-                    },
-                    contentType: 'application/json; charset=utf-8',
-                    success: function (result) {
-                        $('.displayDetails').html(result);
-                    },
-                    error: function (result) {
-                        alert("Something went wrong");
-                        //$('.displayDetails').html(result);
-                    }
-                });
-            }
-            else {
-                alert('Please enter a Tag number');
-            }
-        });
-        */
-        //Refereshing the ParkingInformation window every 15 mins
-        $.ajax({
-            type: 'GET',
-            url: '/Home/ParkingInformation',
-            data: {
-                'tagNumber': null, 'actionToPerform': "REFRESH"
-            },
-            contentType: 'application/json; charset=utf-8',
-            success: function (result) {
-                $('.displayDetails').html(result);
-                setInterval('location.reload()', 900000);
-            },
-            error: function (result) {
-                alert("Fetching of the Data Failed");
-                //$('.displayDetails').html(result);
-            }
-        });
-
-        $("#button_out").click(function (e) {
-            var tagNumber = $('#tag_number').val();
-
-            if (tagNumber != '') {
-                $.ajax({
-                    url: "/Home/ParkingInformation",
-                    data: { 'tagNumber': tagNumber, 'actionToPerform': "OUT" },
-                    contentType: 'application/json; charset=utf-8',
-                    success: function (result) {
-                        $('.displayDetails').html(result);
-                    },
-                    error: function (result) {
-                        alert("Deletion Failed");
-                        //$('.displayDetails').html(result);
-                    }
-                });
-            }
-            else {
-                alert('Please enter a Tag number');
-            }
-        });
-
-
-
-        $("#button_stats").click(function (e) {
-            var Id = 1;
+        if (tagNumber != '') {
             $.ajax({
-                url: '/Home/GetReport',
+                url: baseadd + "api/vehicle/iscarregisteredinparking",
                 type: 'POST',
-                data: {
-                    Id: Id
-                },
-                success: function (response) {
-                    $("#myModal").find(".modal-body").html(response);
-                    $('#myModal').modal('show');
-                },
-                error: function (error) {
-                    console.error(error);
-                },
-            });
-        })
+                dataType: "json",
+                contentType: "application/json",
+                data: JSON.stringify(vehicle),
+                success: function (vehicleAlreadyPresent) {
 
-    </script>
+
+                    if (vehicleAlreadyPresent) {
+                        $(".errorDisplay").replaceWith("<div id='.alert' class='alert alert-danger col-xs-10 col-xs-offset-1'><strong>Vehicle Already Present</strong></div>");
+
+                        setTimeout(function () {
+                            $('.alert').replaceWith("<div class='errorDisplay'></div>");
+                        }, 2000);
+                    }
+
+                    else {
+                        $.ajax({
+                            url: "/Home/ParkingInformation",
+                            data: {
+                                'tagNumber': tagNumber, 'actionToPerform': "IN"
+                            },
+                            contentType: 'application/json; charset=utf-8',
+                            success: function (result) {
+                                $('.displayDetails').html(result);
+                            },
+                            error: function (result) {
+                                $(".div3").replaceWith(result);
+
+                                setTimeout(function () {
+                                    $('.alert').replaceWith("<div class='div3'></div>");
+                                }, 5000);
+                            }
+                        });
+                    }
+
+                },
+                error: function (result) {
+                    //alert("Something went wrong");
+                }
+            });
+        }
+        else {
+            alert('Please enter a Tag number');
+        }
+    });
+
+    
+    
+    //Refereshing the ParkingInformation window every 15 mins
+    $.ajax({
+        type: 'GET',
+        url: '/Home/ParkingInformation',
+        data: {
+            'tagNumber': null, 'actionToPerform': "REFRESH"
+        },
+        contentType: 'application/json; charset=utf-8',
+        success: function (result) {
+            $('.displayDetails').html(result);
+            setInterval('location.reload()', 900000);
+        },
+        error: function (result) {
+            alert("Fetching of the Data Failed");
+            //$('.displayDetails').html(result);
+        }
+    });
+
+    $("#button_out").click(function (e) {
+        var tagNumber = $('#tag_number').val();
+
+        if (tagNumber != '') {
+            $.ajax({
+                url: "/Home/ParkingInformation",
+                data: { 'tagNumber': tagNumber, 'actionToPerform': "OUT" },
+                contentType: 'application/json; charset=utf-8',
+                success: function (result) {
+                    $('.displayDetails').html(result);
+                },
+                error: function (result) {
+                    alert("Deletion Failed");
+                    //$('.displayDetails').html(result);
+                }
+            });
+        }
+        else {
+            alert('Please enter a Tag number');
+        }
+    });
+
+
+
+    $("#button_stats").click(function (e) {
+        var Id = 1;
+        $.ajax({
+            url: '/Home/GetReport',
+            type: 'POST',
+            data: {
+                Id: Id
+            },
+            success: function (response) {
+                $("#myModal").find(".modal-body").html(response);
+                $('#myModal').modal('show');
+            },
+            error: function (error) {
+                console.error(error);
+            },
+        });
+    })
+
+</script>

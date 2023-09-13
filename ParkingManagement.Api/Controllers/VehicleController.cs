@@ -16,9 +16,9 @@ namespace ParkingManagement.Api.Controllers
         }
 
         [HttpGet, Route("getvehicledata")]
-        public async Task<IActionResult> GetVehicleData()
+        public  IActionResult GetVehicleData()
         {
-            var results = await _service.GetParkingInformation();
+            var results = _service.GetParkingInformation();
             return Ok(results);
         }
 
@@ -27,13 +27,6 @@ namespace ParkingManagement.Api.Controllers
         {
             var results = _service.IsCarRegisteredInParkingLot(vehicle);
             return Ok(results);
-        }
-
-        [HttpPost, Route("iscarregisteredinparkingtest")]
-        public IActionResult IsCarRegisteredInParkingLot(string vehicle)
-        {
-            //var results = _service.IsCarRegisteredInParkingLot(vehicle);
-            return Ok(null);
         }
 
         [HttpGet, Route("getreport")]
