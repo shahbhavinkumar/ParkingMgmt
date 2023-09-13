@@ -1,0 +1,45 @@
+﻿@using Shared
+@model IEnumerable<ParkingInformation> 
+
+
+@{
+
+    double hourlyFee = Double.Parse(ConfigurationManager.AppSetting["Configs:hourlyFee"]);
+    int availableSpots = Spots.SpotsAvailable;
+    int currentTotalSpots = Model.ToList().Count;
+}
+
+Available spots : @Spots.SpotsAvailable
+<br/>
+Hourly Fee : @hourlyFee
+<br />
+<br />
+
+<table class="table table-condensed">
+    <thead>
+        <tr>
+            <th>Tag</th>
+            <th>In</th>
+            <th>Elapsed time</th>
+
+        </tr>
+    </thead>
+    <body>
+        @foreach (var item in Model)
+        {
+        <tr>
+            <td>
+                    @item.TagNumber
+            </td>
+            <td>
+                    @item.InTime
+            </td>
+            <td>
+                    @item.HoursParked
+            </td>
+
+        </tr>
+        }
+    </body>
+    <tr>
+</table>
