@@ -54,9 +54,6 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Vehicle Report</h5>
-                <!--<button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>-->
             </div>
             <div class="modal-body">
             </div>
@@ -126,11 +123,12 @@
 
                 },
                 error: function (result) {
-                    //alert("Something went wrong");
+                    alert("Something went wrong, Please contact System Admin");
                 }
             });
         }
-        else {
+        else 
+        {
             alert('Please enter a Tag number');
         }
     });
@@ -155,29 +153,80 @@
         }
     });
 
+
     $("#button_out").click(function (e) {
         var tagNumber = $('#tag_number').val();
 
-        if (tagNumber != '') {
+        if (tagNumber != '')
+        {
+            var vehicle = {
+                TagNumber: tagNumber,
+                InTime: new Date(),
+                OutTime: null,
+                Rate: "15"
+            };
+
             $.ajax({
-                url: "/Home/ParkingInformation",
-                data: { 'tagNumber': tagNumber, 'actionToPerform': "OUT" },
-                contentType: 'application/json; charset=utf-8',
-                success: function (result) {
-                    $('.displayDetails').html(result);
-                },
-                error: function (result) {
-                    alert("Deletion Failed");
-                    //$('.displayDetails').html(result);
+            url: baseadd + "api/vehicle/iscarregisteredinparking",
+            type: 'POST',
+            dataType: "json",
+            contentType: "application/json",
+            data: JSON.stringify(vehicle),
+            success: function (vehicleAlreadyPresent) 
+            {
+
+                if (vehicleAlreadyPresent) 
+                {
+                        $.ajax({
+                            url: baseadd + "api/vehicle/out",
+                            type: 'POST',
+                            dataType: "json",
+                            contentType: "application/json",
+                            data: JSON.stringify(vehicle),
+                            success: function (result) 
+                            {
+                                $("#myModal").find(".modal-body").html(result);
+                                $('#myModal').modal('show');
+
+                                $.ajax({
+                                    url: "/Home/ParkingInformation",
+                                    data: { 'tagNumber': null, 'actionToPerform': "REFRESH" },
+                                    contentType: 'application/json; charset=utf-8',
+                                    success: function (result)
+                                    {
+                                        $('.displayDetails').html(result);
+                                    },
+                                    error: function (result) {
+                                        alert("Something went wrong during REFRESH, Please contact System Admin");
+                                    }
+                                });
+                            },
+                            error: function (result) {
+                                alert("Something went wrong, Please contact System Admin");
+                            }
+                        });
                 }
-            });
+
+                else 
+                {
+                    $(".errorDisplay").replaceWith("<div id='.alert' class='alert alert-danger col-xs-10 col-xs-offset-1'><strong>No registeration found for the car</strong></div>");
+
+                    setTimeout(function () {
+                        $('.alert').replaceWith("<div class='errorDisplay'></div>");
+                    }, 2000);
+                }
+
+            },
+            error: function (result) {
+                alert("Something went wrong, Please contact System Admin");
+            }
+        });
         }
-        else {
+        else 
+        {
             alert('Please enter a Tag number');
         }
     });
-
-
 
     $("#button_stats").click(function (e) {
         var Id = 1;

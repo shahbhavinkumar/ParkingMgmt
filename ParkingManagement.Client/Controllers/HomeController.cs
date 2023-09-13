@@ -2,6 +2,9 @@
 using ParkingManagement.Client.Models;
 using System.Diagnostics;
 using Shared;
+using System.Reflection;
+using Microsoft.AspNetCore.Mvc.Formatters;
+using Newtonsoft.Json.Linq;
 
 namespace ParkingManagement.Client.Controllers
 {
@@ -53,9 +56,11 @@ namespace ParkingManagement.Client.Controllers
 
             if (actionToPerform == "OUT")
             {
-                if (Out(vehicle))
+                ParkingInformation? vehicleParkingInfo = Out(vehicle);
+         
+                if (vehicleParkingInfo != null)
                 {
-                    Spots.SpotsAvailable = Spots.SpotsAvailable + 1;
+                    ++Spots.SpotsAvailable;
                     List<ParkingInformation>? parkingInfoObject = GetParkingData()?.ToList();
                     return PartialView(parkingInfoObject);
                 }
@@ -76,10 +81,10 @@ namespace ParkingManagement.Client.Controllers
             return PartialView();
         }
 
-        private bool Out(ParkingInformation vehicleInfo)
+        private ParkingInformation? Out(ParkingInformation vehicleInfo)
         {
-            var result = _client.PostAsJsonAsync("/api/vehicle/out", vehicleInfo).Result;
-            return result.Content.ReadAsStringAsync().Result == "true" ? true : false;
+            var result = _client.PostAsync("/api/vehicle/out", vehicleInfo).Result;
+            return result;
         }
 
         private bool ParkVehicle(ParkingInformation vehicleInfo)
@@ -108,6 +113,8 @@ namespace ParkingManagement.Client.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+
+
     }
 
 }

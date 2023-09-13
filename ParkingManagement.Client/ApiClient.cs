@@ -12,6 +12,7 @@ namespace ParkingManagement.Client
             Task<TResult?> GetFromJsonAsync<TResult>(string? requestUri);
             Task<HttpResponseMessage> PostAsJsonAsync<T>(string? requestUri, T value);
             Uri BaseAddress { get; set; }
+            Task<TResult?> PostAsync<TResult>(string? requestUri, TResult value);
     }
 
 
@@ -34,7 +35,24 @@ namespace ParkingManagement.Client
             }
 
 
-            public async Task<TResult?> GetFromJsonAsync<TResult>(string? requestUri)
+            public async Task<TResult?> PostAsync<TResult>(string? requestUri, TResult value)
+            {
+
+                string json = JsonConvert.SerializeObject(value);   
+
+                StringContent httpContent = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+
+                var response = await http.PostAsync(requestUri, httpContent);
+
+                if (!response.IsSuccessStatusCode) return default;
+
+                var result = await response.Content.ReadFromJsonAsync<TResult?>();
+
+                 return result;
+            }
+
+
+        public async Task<TResult?> GetFromJsonAsync<TResult>(string? requestUri)
                 {
                     var response = await http.GetAsync(requestUri);
 

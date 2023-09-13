@@ -1,6 +1,9 @@
 ﻿using Shared;
 using System.Data.SqlClient;
 using System.Data;
+using System.Diagnostics;
+using System.Runtime.Intrinsics.Arm;
+using System.Reflection.PortableExecutable;
 
 namespace ParkingManagement.Api
 {
@@ -10,14 +13,14 @@ namespace ParkingManagement.Api
 
         IEnumerable<ParkingInformation> GetParkingInformation();
 
-        bool ParkVehicle(ParkingInformation vehicle);
+        bool In(ParkingInformation vehicle);
 
-        bool Out(ParkingInformation vehicle);
+        ParkingInformation Out(ParkingInformation vehicle);
 
         StatsReport GetReport();
     }
 
-    public class VehicleService: IVehicleService
+    public class VehicleService : IVehicleService
     {
         IDataContext _context;
 
@@ -26,14 +29,13 @@ namespace ParkingManagement.Api
             _context = dataContext;
         }
 
-
-        public bool ParkVehicle(ParkingInformation vehicle)
+        public bool In(ParkingInformation vehicle)
         {
             try
             {
                 using (SqlConnection con = new SqlConnection(ConfigurationManager.AppSetting["ConnectionStrings:SqlConnection"]))
                 {
-                   
+
                     string insertQuery = $@"INSERT INTO ParkingInformation 
                                                     (TagNumber, InTime, Rate) 
                                                 VALUES ('{vehicle.TagNumber}','{vehicle.InTime}', '{vehicle.Rate}') ";
@@ -41,7 +43,7 @@ namespace ParkingManagement.Api
                     con.Open();
                     SqlCommand sqlCmd = new SqlCommand(insertQuery, con);
                     sqlCmd.ExecuteNonQuery();
-                 
+
                 }
             }
             catch (Exception ex)
@@ -81,7 +83,7 @@ namespace ParkingManagement.Api
                         parkingInfoList.Add(parkingInfo);
                     }
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     //To-Do : Implement Logger
 
@@ -110,31 +112,41 @@ namespace ParkingManagement.Api
             }
         }
 
-        public bool Out(ParkingInformation vehicle)
+        public ParkingInformation Out(ParkingInformation vehicle)
         {
-            if (IsCarRegisteredInParkingLot(vehicle)) //Implies that Car was parked in the lot a
-                                                      //and hasnt checked out yet
-            {
+            var vehicleParkingInfo = new ParkingInformation();
 
-                using (SqlConnection con = new SqlConnection(ConfigurationManager.AppSetting["ConnectionStrings:SqlConnection"]))
+            using (SqlConnection con = new SqlConnection(ConfigurationManager.AppSetting["ConnectionStrings:SqlConnection"]))
+            {
+                try
                 {
-                    try
-                    {
-                        string insertQuery = $@"UPDATE ParkingInformation 
-                                            SET OutTime = GETDATE()
+                    con.Open();
+
+                    string insertQuery = $@"UPDATE ParkingInformation 
+                                            SET OutTime = GETDATE() OUTPUT INSERTED.* 
                                             WHERE TagNumber = '{vehicle.TagNumber}' and OutTime IS NULL";
 
-                        con.Open();
-                        SqlCommand sqlCmd = new SqlCommand(insertQuery, con);
-                        sqlCmd.ExecuteNonQuery();
-                    }
-                    catch (Exception ex)
+                    using (SqlCommand sqlCmd = new SqlCommand(insertQuery, con))
                     {
-                        Console.WriteLine(ex.Message);
-                    }
+                        SqlDataReader rdr = sqlCmd.ExecuteReader();
+
+                        if (rdr.Read())
+                        {
+                            vehicleParkingInfo.TagNumber = rdr["TagNumber"].ToString()!;
+                            vehicleParkingInfo.InTime = Convert.ToDateTime(rdr["InTime"]);
+                            vehicleParkingInfo.Rate = !Convert.IsDBNull(rdr["Rate"]) ? Convert.ToDouble(rdr["Rate"]) : null;
+                            vehicleParkingInfo.OutTime = !Convert.IsDBNull(rdr["OutTime"]) ? Convert.ToDateTime(rdr["OutTime"]) : null;
+                        }
+                    }              
+
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
                 }
             }
-            return true;
+
+            return vehicleParkingInfo;
         }
 
         public StatsReport GetReport()

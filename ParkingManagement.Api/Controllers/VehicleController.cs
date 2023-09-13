@@ -40,15 +40,15 @@ namespace ParkingManagement.Api.Controllers
         [HttpPost, Route("parkvehicle")]
         public IActionResult PostTag([FromBody] ParkingInformation vehicle)
         {
-            var isVehicleAlreadyParked = _service.ParkVehicle(vehicle);
+            var isVehicleAlreadyParked = _service.In(vehicle);
             return Ok(isVehicleAlreadyParked);
         }
 
         [HttpPost, Route("out")]
         public IActionResult Out([FromBody] ParkingInformation vehicle)
         {
-            var isVehicleAlreadyParked = _service.Out(vehicle);
-            return Ok(isVehicleAlreadyParked);
+            var vehicleParkingInfo = _service.Out(vehicle);
+            return Ok(vehicleParkingInfo);
         }
 
         public string Index()
