@@ -17,11 +17,12 @@ namespace Shared
 
         public int? HoursParked
         {
-            get
+            set { }
+           
+            get 
             {
-                return this.OutTime != null? Convert.ToInt32(Math.Ceiling((DateTime.Now - InTime).TotalHours)) : null;
-               // return  Rate != null ? Convert.ToInt32(hours * Rate.Value) : 0;
-            }            
+                return Convert.ToInt32(Math.Ceiling((DateTime.Now - InTime).TotalHours));
+            }
         }
     }
 }

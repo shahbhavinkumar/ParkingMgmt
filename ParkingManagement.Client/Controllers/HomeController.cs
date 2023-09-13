@@ -37,7 +37,7 @@ namespace ParkingManagement.Client.Controllers
             {
                 if (Spots.SpotsAvailable == 0)
                 {
-                    return RedirectToAction("Error", "Home", new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier, Message = "No Spots Available" });
+                    return PartialView("Error", new ErrorViewModel {  Message = "No Spots Available" });
                 }
 
              
@@ -47,13 +47,10 @@ namespace ParkingManagement.Client.Controllers
                     List<ParkingInformation>? parkingInfoObject = GetParkingData()?.ToList();
                     return PartialView(parkingInfoObject);
                 }
-                else
-                {
-                    // throw  new Exception("Vehicle Entry Already Present");
-                    return RedirectToAction("Error", "Home", new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier, Message = "Vehicle Entry Already Present" });//;new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier, Message ="Vehicle Entry Already Present" });
-                }
+               
             }
 
+            /*
             if (actionToPerform == "OUT")
             {
                 ParkingInformation? vehicleParkingInfo = Out(vehicle);
@@ -64,7 +61,7 @@ namespace ParkingManagement.Client.Controllers
                     List<ParkingInformation>? parkingInfoObject = GetParkingData()?.ToList();
                     return PartialView(parkingInfoObject);
                 }
-            }
+            }*/
 
             if (actionToPerform == "REFRESH") //used for page referesh
             {
