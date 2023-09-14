@@ -13,8 +13,6 @@ namespace Shared
         public DateTime? OutTime { get; set; }
         public double? Rate { get; set; }
 
-        public double? AmountToCharge { get; set; } = 100.0;
-
         public int? HoursParked
         {
             set { }

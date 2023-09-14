@@ -180,7 +180,9 @@
         })
         .then(function (data) {
             $('.displayDetails').html(data);
-
+            setInterval(() => {
+                  location.reload();
+                }, 900000);
         })
         .catch(function (error) {
             alert(error.message);
@@ -196,7 +198,7 @@
                 TagNumber: tagNumber,
                 InTime: new Date(),
                 OutTime: null,
-                Rate: "15"
+                Rate: "15" //doesnt matter what its set to, its a non null field so setting it 
             };
 
             $.ajax({
@@ -218,7 +220,9 @@
                             data: JSON.stringify(vehicle),
                             success: function (result) 
                             {
-                                $("#myModal").find(".modal-body").html(result);
+                                var amountToCharge = parseInt(result["rate"]) * parseInt(result["hoursParked"]);
+
+                                $("#myModal").find(".modal-body").html("Fee to charge: " +amountToCharge);
                                 $('#myModal').modal('show');
 
                                 $.ajax({

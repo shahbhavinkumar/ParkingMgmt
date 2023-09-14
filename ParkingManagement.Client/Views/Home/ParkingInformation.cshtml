@@ -3,7 +3,6 @@
 
 
 @{
-
     double hourlyFee = Double.Parse(ConfigurationManager.AppSetting["Configs:hourlyFee"]);
     int availableSpots = Spots.SpotsAvailable;
     int currentTotalSpots = Model.ToList().Count;
