@@ -118,57 +118,78 @@
             Rate: "15"
         };
 
-        if (tagNumber != '') {
-            $.ajax({
-                url: baseadd + "api/vehicle/iscarregisteredinparking",
-                type: 'POST',
-                dataType: "json",
-                contentType: "application/json",
-                data: JSON.stringify(vehicle),
-                success: function (vehicleAlreadyPresent) {
-
-
-                    if (vehicleAlreadyPresent) {
-                        $(".errorDisplay").replaceWith("<div id='.alert' class='alert alert-danger col-xs-10 col-xs-offset-1'><strong>Vehicle Already Present</strong></div>");
-
-                        setTimeout(function () {
-                            $('.alert').replaceWith("<div class='errorDisplay'></div>");
-                        }, 2000);
-                    }
-
-                    else {
-                        $.ajax({
-                            url: "/Home/ParkingInformation",
-                            data: {
-                                'tagNumber': tagNumber, 'actionToPerform': "IN"
-                            },
-                            contentType: 'application/json; charset=utf-8',
-                            success: function (result) {
-                                $('.displayDetails').html(result);
-                            },
-                            error: function (result) {
-                                $(".div3").replaceWith(result);
-
-                                setTimeout(function () {
-                                    $('.alert').replaceWith("<div class='div3'></div>");
-                                }, 5000);
-                            }
-                        });
-                    }
-
-                },
-                error: function (result) {
-                    alert("Something went wrong, Please contact System Admin");
-                }
-            });
-        }
-        else 
+        if(currentTotalSpots > 0)
         {
-            alert('Please enter a Tag number');
+            if (tagNumber != '') 
+            {
+                $.ajax({
+                    url: baseadd + "api/vehicle/iscarregisteredinparking",
+                    type: 'POST',
+                    dataType: "json",
+                    contentType: "application/json",
+                    data: JSON.stringify(vehicle),
+                    success: function (vehicleAlreadyPresent) {
+
+
+                        if (vehicleAlreadyPresent) {
+                            $(".errorDisplay").replaceWith("<div id='.alert' class='alert alert-danger col-xs-10 col-xs-offset-1'><strong>Vehicle Already Present</strong></div>");
+
+                            setTimeout(function () {
+                                $('.alert').replaceWith("<div class='errorDisplay'></div>");
+                            }, 2000);
+                        }
+
+                        else {
+                            $.ajax({
+                                url: "/Home/ParkingInformation",
+                                data: {
+                                    'tagNumber': tagNumber, 'actionToPerform': "IN"
+                                },
+                                contentType: 'application/json; charset=utf-8',
+                                success: function (result) {
+                                    $('.displayDetails').html(result);
+                                },
+                                error: function (result) {
+                                    $(".div3").replaceWith(result);
+
+                                    setTimeout(function () {
+                                        $('.alert').replaceWith("<div class='div3'></div>");
+                                    }, 5000);  //shows the error for 5 seconds
+                                }
+                            });
+                        }
+
+                    },
+                    error: function (result) {
+                        alert("Something went wrong, Please contact System Admin");
+                    }
+                });
+            }
+            else 
+            {
+                alert('Please enter a Tag number');
+            }
         }
+        else{
+            alert('No Parking Spots Available');
+        }
+
     });
 
-    
+    fetch('/Home/ParkingInformation?tagNumber=null&actionToPerform=AVAILABLESPOTS')
+        .then(function (response) {
+            if (!response.ok) {
+                throw new Error('Fetching of the Data Failed for AVAILABLESPOTS');
+            }
+            return response.text();
+        })
+        .then(function (data) {
+            currentTotalSpots = parseInt(data);
+        })
+        .catch(function (error) {
+            alert(error.message);
+        });
+
     
     //Refereshing the ParkingInformation window every 15 mins
     fetch('/Home/ParkingInformation?tagNumber=null&actionToPerform=REFRESH')

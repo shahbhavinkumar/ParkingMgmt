@@ -35,12 +35,7 @@ namespace ParkingManagement.Client.Controllers
 
             if (actionToPerform == "IN")
             {
-                if (Spots.SpotsAvailable == 0)
-                {
-                    return PartialView("Error", new ErrorViewModel {  Message = "No Spots Available" });
-                }
-
-             
+               
                 if (ParkVehicle(vehicle))
                 {
                     Spots.SpotsAvailable = Spots.SpotsAvailable - 1;
@@ -50,18 +45,21 @@ namespace ParkingManagement.Client.Controllers
                
             }
 
-            /*
-            if (actionToPerform == "OUT")
+            
+            if (actionToPerform == "AVAILABLESPOTS")
             {
-                ParkingInformation? vehicleParkingInfo = Out(vehicle);
-         
-                if (vehicleParkingInfo != null)
+                var list = GetParkingData()?.ToList();
+
+
+                if (list!= null)
                 {
-                    ++Spots.SpotsAvailable;
-                    List<ParkingInformation>? parkingInfoObject = GetParkingData()?.ToList();
-                    return PartialView(parkingInfoObject);
+                    Spots.SpotsAvailable = Spots.TotalSpots - list.Count;
+
+                    return Json(Spots.SpotsAvailable);
                 }
-            }*/
+
+                return Json(Spots.TotalSpots);
+            }
 
             if (actionToPerform == "REFRESH") //used for page referesh
             {
