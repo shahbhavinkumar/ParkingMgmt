@@ -1,4 +1,5 @@
 ﻿@using Shared
+@using System.Globalization
 @model IEnumerable<ParkingInformation> 
 
 
@@ -8,11 +9,16 @@
     int currentTotalSpots = Model.ToList().Count;
 }
 
+<p>
+    Total Spots: @Spots.TotalSpots
+    <br/>
+    Hourly Fee : @hourlyFee
+
+</p>
+<p>
 Available spots : @Spots.SpotsAvailable
-<br/>
-Hourly Fee : @hourlyFee
-<br />
-<br />
+</p>
+
 <style>
     /* Custom CSS for the table */
     .custom-table {
@@ -53,9 +59,15 @@ Hourly Fee : @hourlyFee
         {
             <tr>
                 <td>@item.TagNumber</td>
-                <td>@item.InTime</td>
+                <td>
+                    @((item.InTime).ToString("hh:mm tt", CultureInfo.InvariantCulture))
+                </td>
                 <td>@item.HoursParked</td>
             </tr>
         }
     </tbody>
 </table>
+
+            <p>
+    Spots Taken : @(Spots.TotalSpots -  Spots.SpotsAvailable)
+            </p>
