@@ -14,32 +14,49 @@ Available spots : @Spots.SpotsAvailable
 Hourly Fee : @hourlyFee
 <br />
 <br />
+<style>
+    /* Custom CSS for the table */
+    .custom-table {
+        border-collapse: collapse;
+        width: 100%;
+    }
 
-<table class="table table-condensed">
+        .custom-table th, .custom-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .custom-table th {
+            background-color: #4CAF50; /* Dark green for header */
+            color: white;
+        }
+
+        .custom-table tbody tr:nth-child(even) {
+            background-color: #D3EFD3; /* Light green for even rows */
+        }
+
+        .custom-table tbody tr:nth-child(odd) {
+            background-color: #B9E4B9; /* Slightly darker green for odd rows */
+        }
+</style>
+
+<table class="custom-table">
     <thead>
         <tr>
             <th>Tag</th>
             <th>In</th>
             <th>Elapsed time</th>
-
         </tr>
     </thead>
-    <body>
+    <tbody>
         @foreach (var item in Model)
         {
-        <tr>
-            <td>
-                    @item.TagNumber
-            </td>
-            <td>
-                    @item.InTime
-            </td>
-            <td>
-                    @item.HoursParked
-            </td>
-
-        </tr>
+            <tr>
+                <td>@item.TagNumber</td>
+                <td>@item.InTime</td>
+                <td>@item.HoursParked</td>
+            </tr>
         }
-    </body>
-    <tr>
+    </tbody>
 </table>
