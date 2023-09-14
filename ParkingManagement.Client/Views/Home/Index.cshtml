@@ -136,22 +136,20 @@
     
     
     //Refereshing the ParkingInformation window every 15 mins
-    $.ajax({
-        type: 'GET',
-        url: '/Home/ParkingInformation',
-        data: {
-            'tagNumber': null, 'actionToPerform': "REFRESH"
-        },
-        contentType: 'application/json; charset=utf-8',
-        success: function (result) {
-            $('.displayDetails').html(result);
-            setInterval('location.reload()', 900000);
-        },
-        error: function (result) {
-            alert("Fetching of the Data Failed");
-            //$('.displayDetails').html(result);
-        }
-    });
+    fetch('/Home/ParkingInformation?tagNumber=null&actionToPerform=REFRESH')
+        .then(function (response) {
+            if (!response.ok) {
+                throw new Error('Fetching of the Data Failed');
+            }
+            return response.text();
+        })
+        .then(function (data) {
+            $('.displayDetails').html(data);
+
+        })
+        .catch(function (error) {
+            alert(error.message);
+            });
 
 
     $("#button_out").click(function (e) {
@@ -228,22 +226,27 @@
         }
     });
 
-    $("#button_stats").click(function (e) {
-        var Id = 1;
-        $.ajax({
-            url: '/Home/GetReport',
-            type: 'POST',
-            data: {
-                Id: Id
-            },
-            success: function (response) {
-                $("#myModal").find(".modal-body").html(response);
+   
+    document.getElementById("button_stats").addEventListener("click", function (e) {
+        e.preventDefault(); // Prevent the default form submission or link behavior.
+
+        fetch('/Home/GetReport')
+            .then(function (response) {
+                if (!response.ok) {
+                    throw new Error('Failed to fetch data');
+                }
+                return response.text();
+            })
+            .then(function (response) {
+                var modalBody = document.querySelector("#myModal .modal-body");
+                modalBody.innerHTML = response;
                 $('#myModal').modal('show');
-            },
-            error: function (error) {
+            })
+            .catch(function (error) {
                 console.error(error);
-            },
-        });
-    })
+            });
+    });
+
+
 
 </script>
