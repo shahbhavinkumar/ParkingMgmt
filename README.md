@@ -9,7 +9,6 @@ CREATE TABLE [dbo].[ParkingInformation](
 GO
 ```
 
-===================================================================================
 
 ```
 CREATE   PROCEDURE [dbo].[sp_GetReportData]
@@ -43,8 +42,8 @@ FROM (
 SELECT * FROM #temp
 
 drop table #temp
-```
+
 END
 GO
-
+```
 
