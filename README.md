@@ -1,5 +1,5 @@
 # Parking Management
-
+```
 CREATE TABLE [dbo].[ParkingInformation](
 	[TagNumber] [varchar](100) NOT NULL,
 	[InTime] [datetime] NOT NULL,
@@ -7,11 +7,11 @@ CREATE TABLE [dbo].[ParkingInformation](
 	[Rate] [decimal](10, 2) NULL
 ) ON [PRIMARY]
 GO
-
+```
 
 ===================================================================================
 
-
+```
 CREATE   PROCEDURE [dbo].[sp_GetReportData]
 AS
 BEGIN
@@ -43,7 +43,7 @@ FROM (
 SELECT * FROM #temp
 
 drop table #temp
-
+```
 END
 GO
 
