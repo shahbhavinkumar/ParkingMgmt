@@ -24,6 +24,12 @@ namespace ParkingManagement.Client.Controllers
             return View();
         }
 
+        public IActionResult Input()
+        {
+            return View();
+        }
+
+
         public ActionResult ParkingInformation(string tagNumber, string actionToPerform)
         {
             ParkingInformation vehicle = new ParkingInformation()
@@ -45,8 +51,14 @@ namespace ParkingManagement.Client.Controllers
                
             }
 
-            
             if (actionToPerform == "AVAILABLESPOTS")
+            {
+               
+
+                return Json(Spots.SpotsAvailable);
+            }
+
+            if (actionToPerform == "UNUSED")
             {
                 var list = GetParkingData()?.ToList();
 
