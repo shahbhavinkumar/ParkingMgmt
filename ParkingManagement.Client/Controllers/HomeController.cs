@@ -2,9 +2,7 @@
 using ParkingManagement.Client.Models;
 using System.Diagnostics;
 using Shared;
-using System.Reflection;
-using Microsoft.AspNetCore.Mvc.Formatters;
-using Newtonsoft.Json.Linq;
+
 
 namespace ParkingManagement.Client.Controllers
 {
@@ -32,6 +30,24 @@ namespace ParkingManagement.Client.Controllers
 
         public ActionResult ParkingInformation(string tagNumber, string actionToPerform)
         {
+            switch (actionToPerform)
+            {
+                case "IN":
+                    return HandleParkingIn(tagNumber);
+
+                case "AVAILABLESPOTS":
+                    return Json(Spots.SpotsAvailable);
+
+                case "REFRESH":
+                    return HandlePageRefresh();
+
+                default:
+                    return PartialView();
+            }
+        }
+
+        private ActionResult HandleParkingIn(string tagNumber)
+        {
             ParkingInformation vehicle = new ParkingInformation()
             {
                 TagNumber = tagNumber,
@@ -39,45 +55,29 @@ namespace ParkingManagement.Client.Controllers
                 Rate = Double.Parse(ConfigurationManager.AppSetting["Configs:hourlyFee"])
             };
 
-            if (actionToPerform == "IN")
+            if (ParkVehicle(vehicle))
             {
-               
-                if (ParkVehicle(vehicle))
-                {
-                    Spots.SpotsAvailable = Spots.SpotsAvailable - 1;
-                    List<ParkingInformation>? parkingInfoObject = GetParkingData()?.ToList();
-                    return PartialView(parkingInfoObject);
-                }
-               
-            }
-
-            if (actionToPerform == "AVAILABLESPOTS")
-            {
-                return Json(Spots.SpotsAvailable);
-            }
-
-           
-
-            if (actionToPerform == "REFRESH") //used for page referesh
-            {
+                Spots.SpotsAvailable--;
                 List<ParkingInformation>? parkingInfoObject = GetParkingData()?.ToList();
-
-                if (parkingInfoObject != null)
-                {
-                    Spots.SpotsAvailable = Spots.TotalSpots - parkingInfoObject.Count();
-                }
-
                 return PartialView(parkingInfoObject);
             }
-
+         
             return PartialView();
         }
 
-        private ParkingInformation? Out(ParkingInformation vehicleInfo)
+        private ActionResult HandlePageRefresh()
         {
-            var result = _client.PostAsync("/api/vehicle/out", vehicleInfo).Result;
-            return result;
+            List<ParkingInformation>? parkingInfoObject = GetParkingData()?.ToList();
+
+            if (parkingInfoObject != null)
+            {
+                Spots.SpotsAvailable = Spots.TotalSpots - parkingInfoObject.Count;
+            }
+
+            return PartialView(parkingInfoObject);
         }
+
+
 
         private bool ParkVehicle(ParkingInformation vehicleInfo)
         {
