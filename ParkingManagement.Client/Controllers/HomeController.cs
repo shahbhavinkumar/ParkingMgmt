@@ -53,25 +53,10 @@ namespace ParkingManagement.Client.Controllers
 
             if (actionToPerform == "AVAILABLESPOTS")
             {
-               
-
                 return Json(Spots.SpotsAvailable);
             }
 
-            if (actionToPerform == "UNUSED")
-            {
-                var list = GetParkingData()?.ToList();
-
-
-                if (list!= null)
-                {
-                    Spots.SpotsAvailable = Spots.TotalSpots - list.Count;
-
-                    return Json(Spots.SpotsAvailable);
-                }
-
-                return Json(Spots.TotalSpots);
-            }
+           
 
             if (actionToPerform == "REFRESH") //used for page referesh
             {
