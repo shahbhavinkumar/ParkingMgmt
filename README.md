@@ -18,6 +18,7 @@ production version of the chromium engine.
 • The total number of spots and hourly fee need to be defined in the appsettings.json file.
 
 -------------------------------- Use Case -----------------------------
+
 Cars coming in:
 Whenever a new car arrives, the operator types the tag number and clicks 'In'. The app needs to validate 
 the following.
