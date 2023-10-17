@@ -32,6 +32,11 @@ needs to validate the following.
 * Is the car registered in the parking lot
 Whenever the validation fails, the operator needs to be given an error message
 
+Cars coming out:
+Whenever a car leaves the parking lot, the operator types the tag number and clicks 'Out'. The app 
+needs to validate the following.
+* Is the car registered in the parking lot
+Whenever the validation fails, the operator needs to be given an error message
 
 Stats
 It opens a modal with the following information.
